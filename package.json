@@ -1,11 +1,13 @@
 {
   "name": "server",
   "version": "0.0.1",
-  "description": "Web GL NodeJS server",
+  "description": "node js server",
   "main": "server.js",
+  "engines": {
+    "node": "14.x"
+  },
   "dependencies": {
-    "express": "^4.17.1",
-    "shortid": "^2.2.2",
+    "express": "^4.10.4",
     "socket.io": ">=2.4.0",
     "socketio": "^1.0.0"
   },
