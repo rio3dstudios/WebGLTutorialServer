@@ -56,6 +56,7 @@ io.on('connection', function(socket){
 				   rotation:'0',
 			       id:socket.id,//alternatively we could use socket.id
 				   socketID:socket.id,//fills out with the id of the socket that was open
+				   isMute:false
 				   };//new user  in clients list
 					
 		console.log('[INFO] player '+currentUser.name+': logged!');
@@ -66,6 +67,8 @@ io.on('connection', function(socket){
 		 
 		 //add client in search engine
 		 clientLookup[currentUser.id] = currentUser;
+		 
+		 sockets[currentUser.id] = socket;//add curent user socket
 		 
 		 console.log('[INFO] Total players: ' + clients.length);
 		 
@@ -115,7 +118,43 @@ io.on('connection', function(socket){
        }
 	});//END_SOCKET_ON
 	
-	
+	socket.on("VOICE", function (data) {
+
+
+  if(currentUser)
+  {
+    
+   
+    var newData = data.split(";");
+    newData[0] = "data:audio/ogg;";
+    newData = newData[0] + newData[1];
+
+     
+    clients.forEach(function(u) {
+     
+      if(sockets[u.id]&&u.id!= currentUser.id&&!u.isMute)
+      {
+    
+        sockets[u.id].emit('UPDATE_VOICE',newData);
+      }
+    });
+    
+    
+
+  }
+ 
+});
+
+socket.on("AUDIO_MUTE", function (data) {
+
+
+if(currentUser)
+{
+  currentUser.isMute = !currentUser.isMute;
+
+}
+
+});
 	
 
     // called when the user desconnect

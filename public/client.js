@@ -90,3 +90,60 @@ window.addEventListener('load', function() {
 
 });//END_window_addEventListener
 
+
+
+window.onload = (e) => {
+	mainFunction(1000);
+  };
+  
+  
+  function mainFunction(time) {
+  
+  
+	navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+	  var madiaRecorder = new MediaRecorder(stream);
+	  madiaRecorder.start();
+  
+	  var audioChunks = [];
+  
+	  madiaRecorder.addEventListener("dataavailable", function (event) {
+		audioChunks.push(event.data);
+	  });
+  
+	  madiaRecorder.addEventListener("stop", function () {
+		var audioBlob = new Blob(audioChunks);
+  
+		audioChunks = [];
+  
+		var fileReader = new FileReader();
+		fileReader.readAsDataURL(audioBlob);
+		fileReader.onloadend = function () {
+   
+  
+		  var base64String = fileReader.result;
+		  socket.emit("VOICE", base64String);
+  
+		};
+  
+		madiaRecorder.start();
+  
+  
+		setTimeout(function () {
+		  madiaRecorder.stop();
+		}, time);
+	  });
+  
+	  setTimeout(function () {
+		madiaRecorder.stop();
+	  }, time);
+	});
+  
+  
+   socket.on("UPDATE_VOICE", function (data) {
+	  var audio = new Audio(data);
+	  audio.play();
+	});
+	
+	
+  }
+
