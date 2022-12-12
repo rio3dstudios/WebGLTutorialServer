@@ -25,6 +25,8 @@ io.on('connection', function(socket){
   
   //to store current client connection
   var currentUser;
+  
+  var sended = false;
 	
 	
 	//create a callback fuction to listening EmitPing() method in NetworkMannager.cs unity script
@@ -118,35 +120,33 @@ io.on('connection', function(socket){
        }
 	});//END_SOCKET_ON
 	
-	socket.on("VOICE", function (data) {
+
+socket.on("VOICE", function (data) {
 
 
   if(currentUser)
   {
-    
-   
-    var newData = data.split(";");
-    newData[0] = "data:audio/ogg;";
-    newData = newData[0] + newData[1];
+	
+   var newData = data.split(",");//define a separator character
+   newData[0] = "data:audio/ogg;"; //format the audio packet header
+   newData = newData[0] + newData[1];//concatenate
 
-     
-    clients.forEach(function(u) {
+   //go through the clients list and send audio to the current client "u" if the conditions are met
+   clients.forEach(function(u) {
      
       if(sockets[u.id]&&u.id!= currentUser.id&&!u.isMute)
       {
-    
-        sockets[u.id].emit('UPDATE_VOICE',newData);
+		sockets[u.id].emit('UPDATE_VOICE',newData);
       }
-    });
+    });//END_FOREACH
     
     
-
-  }
+  }//END_IF
  
-});
+});//END_SOCKETIO
+
 
 socket.on("AUDIO_MUTE", function (data) {
-
 
 if(currentUser)
 {
