@@ -57,8 +57,8 @@ io.on('connection', function(socket){
                    position:data.position,
 				   rotation:'0',
 			       id:socket.id,//alternatively we could use socket.id
-				   socketID:socket.id,//fills out with the id of the socket that was open
-				   isMute:false
+				   socketID:socket.id//fills out with the id of the socket that was open
+				
 				   };//new user  in clients list
 					
 		console.log('[INFO] player '+currentUser.name+': logged!');
@@ -121,41 +121,7 @@ io.on('connection', function(socket){
 	});//END_SOCKET_ON
 	
 
-socket.on("VOICE", function (data) {
 
-
-  if(currentUser)
-  {
-	
-   var newData = data.split(",");//define a separator character
-   newData[0] = "data:audio/ogg;"; //format the audio packet header
-   newData = newData[0] + newData[1];//concatenate
-
-   //go through the clients list and send audio to the current client "u" if the conditions are met
-   clients.forEach(function(u) {
-     
-      if(sockets[u.id]&&u.id!= currentUser.id&&!u.isMute)
-      {
-		sockets[u.id].emit('UPDATE_VOICE',newData);
-      }
-    });//END_FOREACH
-    
-    
-  }//END_IF
- 
-});//END_SOCKETIO
-
-
-socket.on("AUDIO_MUTE", function (data) {
-
-if(currentUser)
-{
-  currentUser.isMute = !currentUser.isMute;
-
-}
-
-});
-	
 
     // called when the user desconnect
 	socket.on('disconnect', function ()
